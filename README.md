@@ -1,0 +1,1 @@
+### pip3 install djangorestframework django markdown django-filter pillow
