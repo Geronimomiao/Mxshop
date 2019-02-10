@@ -17,17 +17,25 @@ Including another URLconf
 from django.urls import path, re_path, include
 from django.views.static import serve
 from rest_framework.documentation import include_docs_urls
+from rest_framework.routers import DefaultRouter
 
 import xadmin
 from Mxshop.settings import MEDIA_ROOT
-from goods.views import GoodsListView
+from goods.views import GoodsListViewSet, CategoryViewSet
+from rest_framework.authtoken import views
+
+router = DefaultRouter()
+# 配置 goods 的 url
+router.register(r'goods', GoodsListViewSet, base_name='goods')
+
+# 配置 category 的 url
+router.register(r'categorys', CategoryViewSet, base_name='categorys')
 
 urlpatterns = [
     path('xadmin/', xadmin.site.urls),
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': MEDIA_ROOT}),
-
-    # 商品列表页
-    re_path(r'goods/', GoodsListView.as_view(), name='goods_list'),
+    re_path(r'^', include(router.urls)),
     re_path(r'docs/', include_docs_urls(title='慕学生鲜')),
     re_path(r'^api-auth/', include('rest_framework.urls')),
+    re_path(r'^api-token-auth/', views.obtain_auth_token),
 ]
